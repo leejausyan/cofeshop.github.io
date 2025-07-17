@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu Cafe</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Tambahkan Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="max-w-xl mx-auto py-8">
+    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Menu Cafe</h1>
+    <div id="menu-list" class="space-y-6"></div>
+    <div class="flex justify-center mt-8">
+      <a href="cart.html" class="inline-block bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition">Lihat Keranjang</a>
+    </div>
+  </div>
+
+  <script>
+    const menu = [
+      { id: 1, name: "Kopi Susu", price: 15000 },
+      { id: 2, name: "Teh Manis", price: 8000 },
+      { id: 3, name: "Roti Bakar", price: 12000 }
+    ];
+
+    const container = document.getElementById("menu-list");
+
+    menu.forEach(item => {
+      const div = document.createElement("div");
+      div.innerHTML = `
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+          <div>
+            <h3 class="text-xl font-semibold text-gray-700">${item.name}</h3>
+            <p class="text-gray-500">Rp${item.price}</p>
+          </div>
+          <button onclick="addToCart(${item.id})"
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+            Add to Cart
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    function addToCart(id) {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const item = menu.find(m => m.id === id);
+      cart.push(item);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${item.name} ditambahkan ke keranjang`);
+    }
+  </script>
+</body>
+</html>

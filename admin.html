@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Pesanan Masuk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+  <h1 class="text-3xl font-bold text-center mb-6">Admin Panel - Daftar Pesanan</h1>
+  <div id="pesananList" class="space-y-4 max-w-3xl mx-auto"></div>
+
+  <script>
+    async function fetchPesanan() {
+      const res = await fetch("https://your-railway-backend.up.railway.app/order");
+      const data = await res.json();
+      const container = document.getElementById("pesananList");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = "<p class='text-center text-gray-500'>Belum ada pesanan masuk.</p>";
+        return;
+      }
+
+      data.forEach((order, index) => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-4 rounded shadow";
+
+        const itemsList = order.items.map(item => `• ${item.name} - Rp${item.price}`).join("<br>");
+
+        div.innerHTML = `
+          <p class="font-semibold">Pesanan #${index + 1}</p>
+          <p>No Meja: ${order.meja}</p>
+          <p>Metode Bayar: ${order.metode}</p>
+          <p>Item:</p>
+          <p class="pl-4 text-sm text-gray-700">${itemsList}</p>
+          <p>Status: <span id="status-${order.id}" class="font-semibold">${order.status}</span></p>
+
+          <div class="mt-2 space-x-2">
+            <button onclick="updateStatus(${order.id}, 'paid')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Verifikasi</button>
+            <button onclick="updateStatus(${order.id}, 'completed')" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Selesai</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function updateStatus(orderId, newStatus) {
+      const res = await fetch(`https://your-railway-backend.up.railway.app/order/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (res.ok) {
+        document.getElementById(`status-${orderId}`).textContent = newStatus;
+        alert("Status pesanan diperbarui.");
+      } else {
+        alert("Gagal mengubah status.");
+      }
+    }
+
+    fetchPesanan();
+  </script>
+</body>
+</html>
